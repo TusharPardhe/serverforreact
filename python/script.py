@@ -78,3 +78,5 @@ jsonData = json.dumps(dataset, sort_keys=False, indent=4)
 # write json data to file
 with open("../vaccineData.json", "w") as outfile:
     outfile.write(jsonData)
+
+print("Completed")
