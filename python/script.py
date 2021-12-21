@@ -1,7 +1,16 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
 import requests
 from bs4 import BeautifulSoup
 import re
 import json
+
+
+# In[2]:
 
 
 pageUrl = "https://www.mohfw.gov.in/"
@@ -15,6 +24,9 @@ website_header = soup.find(id="site-dashboard")
 dataset = {}
 
 
+# In[3]:
+
+
 def casesUpOrDown(data):
     if(data):
         if(data.find(class_="fa-arrow-down")):
@@ -24,11 +36,17 @@ def casesUpOrDown(data):
     return ""
 
 
+# In[4]:
+
+
 def getNumbers(data):
     if(data):
         data = data.replace(',', '')
         return re.findall(r'\d+', data)
     return 0
+
+
+# In[5]:
 
 
 def getTotalCasesObject(data):
@@ -51,6 +69,9 @@ def getTotalCasesObject(data):
     return ""
 
 
+# In[6]:
+
+
 total_active_cases = getTotalCasesObject(
     website_header.find("li", class_="bg-blue"))
 total_discharged = getTotalCasesObject(
@@ -63,6 +84,9 @@ dataset["dischargedCases"] = total_discharged
 dataset["deathCases"] = total_death_cases
 
 
+# In[7]:
+
+
 total_vaccinated = getNumbers(website_header.find(class_="coviddata").text)[0]
 vacc_number = getNumbers(website_header.find(class_="coviddataval").text)[0]
 up_or_down = casesUpOrDown(website_header.find(class_="coviddataval"))
@@ -70,13 +94,27 @@ up_or_down = casesUpOrDown(website_header.find(class_="coviddataval"))
 dataset["vaccinationDetails"] = {
     "total": total_vaccinated, "change": vacc_number, "direction": up_or_down}
 
+
+# In[8]:
+
+
 dataset["statesData"] = json.loads(statesData)
 dataset["statesData"][len(dataset["statesData"]) - 1]["state_name"] = "Total"
 
+
+# In[9]:
+
+
 jsonData = json.dumps(dataset, sort_keys=False, indent=4)
+
+
+# In[10]:
+
 
 # write json data to file
 with open("../vaccineData.json", "w") as outfile:
     outfile.write(jsonData)
 
+
+# In[ ]:
 print("Completed")
